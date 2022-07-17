@@ -1,6 +1,6 @@
 const { PORT } = require("./config");
 const express = require("express");
-const { createUser } = require("./models/user")
+const { createUser, loginUser } = require("./models/user")
 const cors = require('cors')
 const app = express();
 
@@ -15,4 +15,9 @@ app.post('/create', (req, res) => {
     const { phoneNumber, password, lastName, firstName } = req.body
     createUser(phoneNumber, password, lastName, firstName)
     res.sendStatus(200)
+})
+
+app.post('/login', (req, res) => {
+    const { phoneNumber, password } = req.body
+    loginUser(phoneNumber, password, res)
 })
