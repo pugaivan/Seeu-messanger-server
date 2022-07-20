@@ -10,10 +10,18 @@ const generateAccesToken = (id) => {
     return jwt.sign(paylod, SECRET_PASSWORD_KEY, { expiresIn: "24h" })
 }
 
-exports.createUser = function (phoneNumber, password, lastName, firstName) {
-    const hashPassword = bcrypt.hashSync(password, 7);
-    const query = `INSERT INTO users(phone_number,first_name,last_name,password) VALUES ('${phoneNumber}','${firstName}','${lastName}','${hashPassword}');`
-    connection.query(query);
+exports.createUser = function (phoneNumber, password, lastName, firstName, res) {
+    const validationPhone = `SELECT id   FROM seeu_messanger.users  WHERE phone_number = '${phoneNumber}';`
+    connection.query(validationPhone, (err, rows, fields) => {
+        if (!rows.length) {
+            const hashPassword = bcrypt.hashSync(password, 7);
+            const query = `INSERT INTO users(phone_number,first_name,last_name,password) VALUES ('${phoneNumber}','${firstName}','${lastName}','${hashPassword}');`
+            connection.query(query);
+        } else {
+            res.status(400).json({ errorMessage: "the user with this number is already registered" })
+        }
+    });
+
 }
 
 exports.loginUser = function (phoneNumber, password, res) {

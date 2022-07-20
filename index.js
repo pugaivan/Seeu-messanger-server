@@ -13,8 +13,7 @@ app.listen(PORT, () => {
 
 app.post('/create', (req, res) => {
     const { phoneNumber, password, lastName, firstName } = req.body
-    createUser(phoneNumber, password, lastName, firstName)
-    res.sendStatus(200)
+    createUser(phoneNumber, password, lastName, firstName, res)
 })
 
 app.post('/login', (req, res) => {
