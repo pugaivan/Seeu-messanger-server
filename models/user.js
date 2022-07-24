@@ -10,21 +10,19 @@ const generateAccesToken = (id) => {
     return jwt.sign(paylod, SECRET_PASSWORD_KEY, { expiresIn: "24h" })
 }
 
-exports.createUser = function (phoneNumber, password, lastName, firstName) {
+exports.createUser = function (phoneNumber, password, lastName, firstName, res) {
     const hashPassword = bcrypt.hashSync(password, 7);
     const query = `INSERT INTO users(phone_number,first_name,last_name,password) VALUES ('${phoneNumber}','${firstName}','${lastName}','${hashPassword}');`
     connection.query(query);
+    res.sendStatus(200)
 }
 
 exports.loginUser = function (phoneNumber, password, res) {
-    let userId = null;
-    let hashedPassword = null;
-
     const query = `SELECT id, password  FROM seeu_messanger.users  WHERE phone_number = '${phoneNumber}';`
     connection.query(query, (err, rows, fields) => {
         if (rows.length) {
-            userId = rows[0].id
-            hashedPassword = rows[0].password
+            const userId = rows[0].id
+            const hashedPassword = rows[0].password
             const isPasswordCorrect = bcrypt.compareSync(password, hashedPassword);
             if (isPasswordCorrect) {
                 const token = generateAccesToken(userId)
@@ -36,4 +34,13 @@ exports.loginUser = function (phoneNumber, password, res) {
             res.status(400).json({ errorMessage: "user not found" })
         }
     });
+}
+
+
+exports.getUserId = (phoneNumber, callback) => {
+    const query = `SELECT id   FROM seeu_messanger.users  WHERE phone_number = '${phoneNumber}';`
+    connection.query(query, (err, rows, fields) => {
+        const userId = rows.length ? rows[0].id : null
+        callback(userId)
+    })
 }

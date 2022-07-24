@@ -1,6 +1,6 @@
 const { PORT } = require("./config");
 const express = require("express");
-const { createUser, loginUser } = require("./models/user")
+const { createUser, loginUser, getUserId } = require("./models/user")
 const cors = require('cors')
 const app = express();
 
@@ -13,8 +13,13 @@ app.listen(PORT, () => {
 
 app.post('/create', (req, res) => {
     const { phoneNumber, password, lastName, firstName } = req.body
-    createUser(phoneNumber, password, lastName, firstName)
-    res.sendStatus(200)
+    getUserId(phoneNumber, (userId) => {
+        if (userId) {
+            res.status(400).json({ errorMessage: "the user with this number is already registered" })
+        } else {
+            createUser(phoneNumber, password, lastName, firstName, res)
+        }
+    })
 })
 
 app.post('/login', (req, res) => {
