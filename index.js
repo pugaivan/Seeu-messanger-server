@@ -4,9 +4,8 @@ const jwt = require('jsonwebtoken');
 
 const { PORT } = require("./config");
 const { createUser, loginUser, getUserId } = require("./models/user")
-const { getContactRelations, insertContactRelations } = require("./models/contactsRelations")
+const { getContactsRelations, insertContactsRelations } = require("./models/contactsRelations")
 const { SECRET_PASSWORD_KEY } = require("./config");
-const e = require("express");
 
 const app = express();
 app.use(cors())
@@ -38,9 +37,9 @@ app.post('/contact', (req, res) => {
     const decodedUserId = jwt.verify(req.headers.authorization, SECRET_PASSWORD_KEY);
     getUserId(phoneNumber, (contactId) => {
         if (contactId) {
-            getContactRelations(decodedUserId, contactId, (id) => {
-                if (!id) {
-                    insertContactRelations(decodedUserId, contactId)
+            getContactsRelations(decodedUserId, contactId, (relations) => {
+                if (!relations) {
+                    insertContactsRelations(decodedUserId, contactId)
                     res.sendStatus(200)
                 } else {
                     res.status(400).json({ errorMessage: "contact with this number already in your contact list" })
