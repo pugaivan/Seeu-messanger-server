@@ -1,7 +1,8 @@
 const connection = require('../mysql')
 const bcrypt = require('bcrypt');
-const { SECRET_PASSWORD_KEY } = require("../config");
 const jwt = require('jsonwebtoken');
+
+const { SECRET_PASSWORD_KEY } = require("../config");
 
 const generateAccesToken = (id) => {
     const paylod = {
@@ -35,7 +36,6 @@ exports.loginUser = function (phoneNumber, password, res) {
         }
     });
 }
-
 
 exports.getUserId = (phoneNumber, callback) => {
     const query = `SELECT id   FROM seeu_messanger.users  WHERE phone_number = '${phoneNumber}';`
