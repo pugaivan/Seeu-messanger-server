@@ -44,3 +44,11 @@ exports.getUserId = (phoneNumber, callback) => {
         callback(userId)
     })
 }
+
+exports.getUsers = (contactsId, callback) => {
+    const usersId = contactsId.toString()
+    const getContact = `SELECT * FROM seeu_messanger.users  WHERE id IN (${usersId});`
+    connection.query(getContact, (err, rows, fields) => {
+        callback(rows)
+    })
+}
