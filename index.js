@@ -34,10 +34,10 @@ app.post('/login', (req, res) => {
 
 app.post('/contact', (req, res) => {
     const { phoneNumber } = req.body
-    const decodedUserId = jwt.verify(req.headers.authorization, SECRET_PASSWORD_KEY);
+    const decodedJwt = jwt.verify(req.headers.authorization, SECRET_PASSWORD_KEY);
     getUserId(phoneNumber, (contactId) => {
         if (contactId) {
-            getContactsRelations(decodedUserId, contactId, (relations) => {
+            getContactsRelations(decodedJwt.id, contactId, (relations) => {
                 if (!relations) {
                     insertContactsRelations(decodedUserId, contactId)
                     res.sendStatus(200)

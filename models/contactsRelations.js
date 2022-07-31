@@ -1,7 +1,7 @@
 const connection = require('../mysql')
 
 exports.getContactsRelations = function (userId, contactId, callback) {
-  const query = `SELECT * FROM contacts_relations  WHERE user_id = '${userId.id}' AND contact_id = '${contactId}';`
+  const query = `SELECT * FROM contacts_relations  WHERE user_id = '${userId}' AND contact_id = '${contactId}';`
   connection.query(query, (err, rows, fields) => callback(rows.length ? rows[0] : null))
 }
 
