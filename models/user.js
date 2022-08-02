@@ -1,15 +1,6 @@
 const connection = require('../mysql')
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
-const { SECRET_PASSWORD_KEY } = require("../config");
-
-const generateAccesToken = (id) => {
-    const paylod = {
-        id
-    }
-    return jwt.sign(paylod, SECRET_PASSWORD_KEY, { expiresIn: "24h" })
-}
+const { generateAccesToken } = require('../helper')
 
 exports.createUser = function (phoneNumber, password, lastName, firstName, res) {
     const hashPassword = bcrypt.hashSync(password, 7);
@@ -42,5 +33,13 @@ exports.getUserId = (phoneNumber, callback) => {
     connection.query(query, (err, rows, fields) => {
         const userId = rows.length ? rows[0].id : null
         callback(userId)
+    })
+}
+
+exports.getUsers = (contactsId, callback) => {
+    const usersId = contactsId.toString()
+    const getContact = `SELECT * FROM seeu_messanger.users  WHERE id IN (${usersId});`
+    connection.query(getContact, (err, rows, fields) => {
+        callback(rows)
     })
 }

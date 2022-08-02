@@ -6,6 +6,14 @@ exports.getContactsRelations = function (userId, contactId, callback) {
 }
 
 exports.insertContactsRelations = function (userId, contactId) {
-  const insertId = `INSERT INTO contacts_relations(user_id,contact_id) VALUES ('${userId.id}', '${contactId}');`
-  connection.query(insertId);
+  const insertQuery = `INSERT INTO contacts_relations(user_id,contact_id) VALUES ('${userId}', '${contactId}');`
+  connection.query(insertQuery);
 }
+
+exports.getContactsId = function (userId, callback) {
+  const query = `SELECT contact_id FROM contacts_relations  WHERE user_id = '${userId}'`
+  connection.query(query, (err, rows, fields) => {
+    callback(rows.map(({ contact_id }) => contact_id))
+  })
+}
+

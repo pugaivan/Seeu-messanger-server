@@ -3,9 +3,10 @@ const cors = require('cors')
 const jwt = require('jsonwebtoken');
 
 const { PORT } = require("./config");
-const { createUser, loginUser, getUserId } = require("./models/user")
-const { getContactsRelations, insertContactsRelations } = require("./models/contactsRelations")
+const { createUser, loginUser, getUserId, getUsers } = require("./models/user")
+const { getContactsRelations, insertContactsRelations, getContactsId } = require("./models/contactsRelations")
 const { SECRET_PASSWORD_KEY } = require("./config");
+const { decodedJwtToken } = require('./helper')
 
 const app = express();
 app.use(cors())
@@ -34,12 +35,12 @@ app.post('/login', (req, res) => {
 
 app.post('/contact', (req, res) => {
     const { phoneNumber } = req.body
-    const decodedJwt = jwt.verify(req.headers.authorization, SECRET_PASSWORD_KEY);
+    const decodedJwt = decodedJwtToken(req.headers.authorization, SECRET_PASSWORD_KEY, jwt);
     getUserId(phoneNumber, (contactId) => {
         if (contactId) {
             getContactsRelations(decodedJwt.id, contactId, (relations) => {
                 if (!relations) {
-                    insertContactsRelations(decodedUserId, contactId)
+                    insertContactsRelations(decodedJwt.id, contactId)
                     res.sendStatus(200)
                 } else {
                     res.status(400).json({ errorMessage: "contact with this number already in your contact list" })
@@ -47,6 +48,23 @@ app.post('/contact', (req, res) => {
             })
         } else {
             res.status(400).json({ errorMessage: "user with this number not found" })
+        }
+    })
+})
+
+app.get('/contacts', (req, res) => {
+    const decodedJwt = decodedJwtToken(req.headers.authorization, SECRET_PASSWORD_KEY, jwt);
+    getContactsId(decodedJwt.id, (contactsId) => {
+        if (contactsId) {
+            getUsers(contactsId, (users) => {
+                if (users) {
+                    res.json({ users })
+                } else {
+                    res.status(400).json({ errorMessage: "users not found" })
+                }
+            })
+        } else {
+            res.json({ users: [] })
         }
     })
 })
