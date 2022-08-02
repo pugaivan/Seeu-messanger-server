@@ -1,15 +1,6 @@
 const connection = require('../mysql')
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
-const { SECRET_PASSWORD_KEY } = require("../config");
-
-const generateAccesToken = (id) => {
-    const paylod = {
-        id
-    }
-    return jwt.sign(paylod, SECRET_PASSWORD_KEY, { expiresIn: "24h" })
-}
+const { generateAccesToken } = require('../helper')
 
 exports.createUser = function (phoneNumber, password, lastName, firstName, res) {
     const hashPassword = bcrypt.hashSync(password, 7);

@@ -1,14 +1,12 @@
 const express = require("express");
 const cors = require('cors')
 const jwt = require('jsonwebtoken');
-const connection = require('./mysql')
-
 
 const { PORT } = require("./config");
 const { createUser, loginUser, getUserId, getUsers } = require("./models/user")
 const { getContactsRelations, insertContactsRelations, getContactsId } = require("./models/contactsRelations")
 const { SECRET_PASSWORD_KEY } = require("./config");
-const { decoded } = require('./helper')
+const { decodedJwtToken } = require('./helper')
 
 const app = express();
 app.use(cors())
@@ -37,7 +35,7 @@ app.post('/login', (req, res) => {
 
 app.post('/contact', (req, res) => {
     const { phoneNumber } = req.body
-    const decodedJwt = decoded(req.headers.authorization, SECRET_PASSWORD_KEY, jwt);
+    const decodedJwt = decodedJwtToken(req.headers.authorization, SECRET_PASSWORD_KEY, jwt);
     getUserId(phoneNumber, (contactId) => {
         if (contactId) {
             getContactsRelations(decodedJwt.id, contactId, (relations) => {
@@ -55,7 +53,7 @@ app.post('/contact', (req, res) => {
 })
 
 app.get('/contacts', (req, res) => {
-    const decodedJwt = decoded(req.headers.authorization, SECRET_PASSWORD_KEY, jwt);
+    const decodedJwt = decodedJwtToken(req.headers.authorization, SECRET_PASSWORD_KEY, jwt);
     getContactsId(decodedJwt.id, (contactsId) => {
         if (contactsId) {
             getUsers(contactsId, (users) => {
@@ -65,8 +63,6 @@ app.get('/contacts', (req, res) => {
                     res.status(400).json({ errorMessage: "users not found" })
                 }
             })
-        } else {
-            res.status(400).json({ errorMessage: "contacts id not found" })
         }
     })
 })
