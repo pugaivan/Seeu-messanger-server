@@ -63,6 +63,8 @@ app.get('/contacts', (req, res) => {
                     res.status(400).json({ errorMessage: "users not found" })
                 }
             })
+        } else {
+            res.json({ users: [] })
         }
     })
 })
