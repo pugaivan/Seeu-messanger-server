@@ -71,6 +71,7 @@ app.get('/contacts', (req, res) => {
 
 app.post('/deleteContact', (req, res) => {
     const { contactId } = req.body
-    deleteContact(contactId)
+    const decodedJwt = decodedJwtToken(req.headers.authorization, SECRET_PASSWORD_KEY, jwt);
+    deleteContact(contactId,decodedJwt.id)
     res.status(200)
 })
