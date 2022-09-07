@@ -17,3 +17,8 @@ exports.getContactsId = function (userId, callback) {
   })
 }
 
+exports.deleteContact = function (contactId) {
+  const deleteQuery = `DELETE FROM contacts_relations WHERE (contact_id = '${contactId}');`
+  connection.query(deleteQuery)
+}
+

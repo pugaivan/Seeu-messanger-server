@@ -1,18 +1,18 @@
 const express = require("express");
 const cors = require('cors')
 const jwt = require('jsonwebtoken');
-
 const { PORT } = require("./config");
 const { createUser, loginUser, getUserId, getUsers } = require("./models/user")
-const { getContactsRelations, insertContactsRelations, getContactsId } = require("./models/contactsRelations")
+const { getContactsRelations, insertContactsRelations, getContactsId, deleteContact } = require("./models/contactsRelations")
 const { SECRET_PASSWORD_KEY } = require("./config");
-const { decodedJwtToken } = require('./helper')
+const { decodedJwtToken } = require('./helper');
 
 const app = express();
 app.use(cors())
 app.use(express.json())
+ 
 
-app.listen(PORT, () => {
+  app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
 });
 
@@ -67,4 +67,10 @@ app.get('/contacts', (req, res) => {
             res.json({ users: [] })
         }
     })
+})
+
+app.post('/deleteContact', (req, res) => {
+    const { contactId } = req.body
+    deleteContact(contactId)
+    res.status(200)
 })
