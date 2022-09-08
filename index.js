@@ -60,7 +60,7 @@ app.get('/contacts', (req, res) => {
                 if (users) {
                     res.json({ users })
                 } else {
-                    res.status(400).json({ errorMessage: "users not found" })
+                    res.json({ users: [] })
                 }
             })
         } else {
@@ -69,9 +69,9 @@ app.get('/contacts', (req, res) => {
     })
 })
 
-app.post('/deleteContact', (req, res) => {
+app.delete('/deleteContact', (req, res) => {
     const { contactId } = req.body
     const decodedJwt = decodedJwtToken(req.headers.authorization, SECRET_PASSWORD_KEY, jwt);
     deleteContact(contactId,decodedJwt.id)
-    res.status(200)
+    res.sendStatus(200)
 })
