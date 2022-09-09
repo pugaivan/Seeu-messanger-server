@@ -69,7 +69,7 @@ app.get('/contacts', (req, res) => {
     })
 })
 
-app.delete('/deleteContact', (req, res) => {
+app.delete('/contact', (req, res) => {
     const { contactId } = req.body
     const decodedJwt = decodedJwtToken(req.headers.authorization, SECRET_PASSWORD_KEY, jwt);
     deleteContact(contactId,decodedJwt.id)
