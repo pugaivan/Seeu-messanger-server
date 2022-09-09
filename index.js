@@ -37,7 +37,10 @@ app.post('/contact', (req, res) => {
     const { phoneNumber } = req.body
     const decodedJwt = decodedJwtToken(req.headers.authorization, SECRET_PASSWORD_KEY, jwt);
     getUserId(phoneNumber, (contactId) => {
-        if (contactId) {
+        if(decodedJwt.id === contactId){
+            res.status(400).json({ errorMessage: "You can not add yourself to your contact list" })
+        }
+        else if (contactId && decodedJwt.id !== contactId) {
             getContactsRelations(decodedJwt.id, contactId, (relations) => {
                 if (!relations) {
                     insertContactsRelations(decodedJwt.id, contactId)
