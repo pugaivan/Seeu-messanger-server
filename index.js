@@ -1,18 +1,18 @@
 const express = require("express");
 const cors = require('cors')
 const jwt = require('jsonwebtoken');
-
 const { PORT } = require("./config");
 const { createUser, loginUser, getUserId, getUsers } = require("./models/user")
-const { getContactsRelations, insertContactsRelations, getContactsId } = require("./models/contactsRelations")
+const { getContactsRelations, insertContactsRelations, getContactsId, deleteContact } = require("./models/contactsRelations")
 const { SECRET_PASSWORD_KEY } = require("./config");
-const { decodedJwtToken } = require('./helper')
+const { decodedJwtToken } = require('./helper');
 
 const app = express();
 app.use(cors())
 app.use(express.json())
+ 
 
-app.listen(PORT, () => {
+  app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
 });
 
@@ -37,7 +37,10 @@ app.post('/contact', (req, res) => {
     const { phoneNumber } = req.body
     const decodedJwt = decodedJwtToken(req.headers.authorization, SECRET_PASSWORD_KEY, jwt);
     getUserId(phoneNumber, (contactId) => {
-        if (contactId) {
+        if(decodedJwt.id === contactId){
+            res.status(400).json({ errorMessage: "You can not add yourself to your contact list" })
+        }
+        else if (contactId && decodedJwt.id !== contactId) {
             getContactsRelations(decodedJwt.id, contactId, (relations) => {
                 if (!relations) {
                     insertContactsRelations(decodedJwt.id, contactId)
@@ -60,11 +63,18 @@ app.get('/contacts', (req, res) => {
                 if (users) {
                     res.json({ users })
                 } else {
-                    res.status(400).json({ errorMessage: "users not found" })
+                    res.json({ users: [] })
                 }
             })
         } else {
             res.json({ users: [] })
         }
     })
+})
+
+app.delete('/contact', (req, res) => {
+    const { contactId } = req.body
+    const decodedJwt = decodedJwtToken(req.headers.authorization, SECRET_PASSWORD_KEY, jwt);
+    deleteContact(contactId,decodedJwt.id)
+    res.sendStatus(200)
 })
